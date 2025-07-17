@@ -1,2 +1,358 @@
 # Slime-Tycoon
 This is a kinda tycoon like game, there's three games on it. Merging Monsters, Coin Clicker and Ore Core Miner. There's at least 3 buttons on each game, the grey one exits back to the home screen, now have fun and enjoy this 3 game! P.S remember to save!
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/your-username/repo-name.git
+git push -u origin main
+import turtle
+
+# -----------------------------
+# Global Game Variables
+# -----------------------------
+slime_coins = 10
+prestige_level = 0
+total_gain = 0
+click_power = 1
+ore = 0
+mine_power = 1
+helpers = 0
+level = 1
+
+# -----------------------------
+# Save and Load Functions
+# -----------------------------
+def save_game():
+    with open("slime_save.txt", "w") as file:
+        file.write(f"{slime_coins}\n")
+        file.write(f"{prestige_level}\n")
+        file.write(f"{total_gain}\n")
+        file.write(f"{click_power}\n")
+        file.write(f"{ore}\n")
+        file.write(f"{mine_power}\n")
+        file.write(f"{helpers}\n")
+        file.write(f"{level}\n")
+
+def load_game():
+    global slime_coins, prestige_level, total_gain, click_power, ore, mine_power, helpers, level
+    try:
+        with open("slime_save.txt", "r") as file:
+            lines = file.readlines()
+            slime_coins = int(lines[0])
+            prestige_level = int(lines[1])
+            total_gain = int(lines[2])
+            click_power = int(lines[3])
+            ore = int(lines[4])
+            mine_power = int(lines[5])
+            helpers = int(lines[6])
+            level = int(lines[7])
+    except:
+        slime_coins = 10
+        prestige_level = 0
+        total_gain = 0
+        click_power = 1
+        ore = 0
+        mine_power = 1
+        helpers = 0
+        level = 1
+
+# -----------------------------
+# Shared Screen Setup
+# -----------------------------
+screen = turtle.Screen()
+screen.setup(width=600, height=400)
+screen.bgcolor("black")
+
+def merging_monsters():
+    global slime_coins, level, total_gain, prestige_level
+
+    screen.clear()
+    screen.title("👾 Merging Monsters")
+    screen.bgcolor("darkgreen")
+
+    for t in turtle.turtles():
+        t.hideturtle()
+        t.clear()
+
+    merge_btn = turtle.Turtle()
+    merge_btn.shape("square")
+    merge_btn.color("purple")
+    merge_btn.penup()
+    merge_btn.goto(-150, 0)
+
+    gain_btn = turtle.Turtle()
+    gain_btn.shape("square")
+    gain_btn.color("orange")
+    gain_btn.penup()
+    gain_btn.goto(0, 0)
+
+    prestige_btn = turtle.Turtle()
+    prestige_btn.shape("square")
+    prestige_btn.color("red")
+    prestige_btn.penup()
+    prestige_btn.goto(150, 0)
+
+    back_btn = turtle.Turtle()
+    back_btn.shape("square")
+    back_btn.color("gray")
+    back_btn.penup()
+    back_btn.goto(0, 130)
+
+    stats = turtle.Turtle()
+    stats.hideturtle()
+    stats.color("white")
+    stats.penup()
+    stats.goto(0, -100)
+
+    def update_stats():
+        stats.clear()
+        stats.write(
+            f"Level: {level} | Coins: {slime_coins} | Gain: {total_gain} | Prestige: {prestige_level}",
+            align="center",
+            font=("Arial", 14, "bold")
+        )
+
+    def merge(x, y):
+        global slime_coins, level
+        cost = 1 + prestige_level
+        if slime_coins >= cost:
+            slime_coins -= cost
+            level += 1
+            update_stats()
+        else:
+            stats.clear()
+            stats.write(f"❌ Need {cost} slime coins to merge!", align="center", font=("Arial", 14, "bold"))
+
+    def gain(x, y):
+        global slime_coins, total_gain
+        bonus = level * (2 + prestige_level)
+        total_gain += level
+        slime_coins += bonus
+        update_stats()
+
+    def prestige(x, y):
+        global slime_coins, level, total_gain, prestige_level
+        if total_gain >= 50:
+            prestige_level += 1
+            level = 1
+            slime_coins = 10
+            total_gain = 0
+            update_stats()
+        else:
+            stats.clear()
+            stats.write("❌ Need 50 total gain to prestige!", align="center", font=("Arial", 14, "bold"))
+
+    def back_to_hub(x, y):
+        screen.clear()
+        phone_code_hub()
+
+    merge_btn.onclick(merge)
+    gain_btn.onclick(gain)
+    prestige_btn.onclick(prestige)
+    back_btn.onclick(back_to_hub)
+    update_stats()
+ #--------------------------------------------------------------   
+def coin_clicker():
+    global slime_coins, click_power
+
+    screen.clear()
+    screen.title("🪙 Coin Clicker")
+    screen.bgcolor("darkblue")
+
+    for t in turtle.turtles():
+        t.hideturtle()
+        t.clear()
+
+    upgrade_cost = 20
+
+    coin_btn = turtle.Turtle()
+    coin_btn.shape("circle")
+    coin_btn.color("gold")
+    coin_btn.penup()
+    coin_btn.goto(-100, 0)
+
+    upgrade_btn = turtle.Turtle()
+    upgrade_btn.shape("square")
+    upgrade_btn.color("cyan")
+    upgrade_btn.penup()
+    upgrade_btn.goto(100, 0)
+
+    back_btn = turtle.Turtle()
+    back_btn.shape("square")
+    back_btn.color("gray")
+    back_btn.penup()
+    back_btn.goto(0, 130)
+
+    stats = turtle.Turtle()
+    stats.hideturtle()
+    stats.color("white")
+    stats.penup()
+    stats.goto(0, -100)
+
+    def update_stats():
+        stats.clear()
+        stats.write(f"Slime Coins: {slime_coins} | Click Power: {click_power} | Upgrade Cost: {upgrade_cost}", align="center", font=("Arial", 14, "bold"))
+
+    def click_coin(x, y):
+        global slime_coins
+        slime_coins += click_power
+        update_stats()
+
+    def upgrade_click(x, y):
+        global slime_coins, click_power
+        nonlocal upgrade_cost
+        if slime_coins >= upgrade_cost:
+            slime_coins -= upgrade_cost
+            click_power += 1
+            upgrade_cost *= 2
+            update_stats()
+        else:
+            stats.clear()
+            stats.write(f"❌ Need {upgrade_cost} slime coins to upgrade!", align="center", font=("Arial", 14, "bold"))
+
+    def back_to_hub(x, y):
+        screen.clear()
+        phone_code_hub()
+
+    coin_btn.onclick(click_coin)
+    upgrade_btn.onclick(upgrade_click)
+    back_btn.onclick(back_to_hub)
+    update_stats()
+    
+def orecore_miner():
+    global ore, mine_power, helpers
+
+    screen.clear()
+    screen.title("⛏️ Orecore Miner")
+    screen.bgcolor("black")
+
+    for t in turtle.turtles():
+        t.hideturtle()
+        t.clear()
+
+    upgrade_cost = 10
+    helper_cost = 20
+    helper_power = 1
+
+    miner = turtle.Turtle()
+    miner.shape("square")
+    miner.color("gold")
+    miner.penup()
+    miner.goto(-150, 0)
+
+    upgrade = turtle.Turtle()
+    upgrade.shape("square")
+    upgrade.color("cyan")
+    upgrade.penup()
+    upgrade.goto(0, 0)
+
+    hire = turtle.Turtle()
+    hire.shape("square")
+    hire.color("green")
+    hire.penup()
+    hire.goto(150, 0)
+
+    back_btn = turtle.Turtle()
+    back_btn.shape("square")
+    back_btn.color("gray")
+    back_btn.penup()
+    back_btn.goto(0, 130)
+
+    stats = turtle.Turtle()
+    stats.hideturtle()
+    stats.color("white")
+    stats.penup()
+    stats.goto(0, -100)
+
+    def update_stats():
+        stats.clear()
+        stats.write(
+            f"Ore: {ore} | Power: {mine_power} | Helpers: {helpers} | Upgrade Cost: {upgrade_cost} | Hire Cost: {helper_cost}",
+            align="center",
+            font=("Arial", 14, "normal")
+        )
+
+    def mine(x, y):
+        global ore
+        ore += mine_power
+        update_stats()
+
+    def upgrade_mining(x, y):
+        global ore, mine_power
+        nonlocal upgrade_cost
+        if ore >= upgrade_cost:
+            ore -= upgrade_cost
+            mine_power += 1
+            upgrade_cost *= 2
+            update_stats()
+        else:
+            stats.clear()
+            stats.write(f"❌ Not enough ore! Need {upgrade_cost}", align="center", font=("Arial", 14, "normal"))
+
+    def hire_helper(x, y):
+        global ore, helpers
+        nonlocal helper_cost
+        if ore >= helper_cost:
+            ore -= helper_cost
+            helpers += 1
+            helper_cost *= 2
+            update_stats()
+        else:
+            stats.clear()
+            stats.write(f"❌ Not enough ore! Need {helper_cost}", align="center", font=("Arial", 14, "normal"))
+
+    def passive_mining():
+        global ore, helpers
+        ore += helpers * helper_power
+        update_stats()
+        screen.ontimer(passive_mining, 1000)
+
+    def back_to_hub(x, y):
+        screen.clear()
+        phone_code_hub()
+
+    miner.onclick(mine)
+    upgrade.onclick(upgrade_mining)
+    hire.onclick(hire_helper)
+    back_btn.onclick(back_to_hub)
+
+    passive_mining()
+    update_stats()
+    
+def phone_code_hub():
+    screen.clear()
+    screen.title("📱 Phone Code Hub")
+    screen.bgcolor("black")
+
+    def create_button(label, x, y, color, action):
+        btn = turtle.Turtle()
+        btn.shape("square")
+        btn.color(color)
+        btn.shapesize(stretch_wid=2, stretch_len=10)
+        btn.penup()
+        btn.goto(x, y)
+        btn.onclick(action)
+
+        label_turtle = turtle.Turtle()
+        label_turtle.hideturtle()
+        label_turtle.color("white")
+        label_turtle.penup()
+        label_turtle.goto(x, y + 30)
+        label_turtle.write(label, align="center", font=("Arial", 14, "bold"))
+        return btn
+
+    create_button("Merging Monsters", 0, 100, "purple", lambda x, y: merging_monsters())
+    create_button("Coin Clicker", 0, 30, "gold", lambda x, y: coin_clicker())
+    create_button("Orecore Miner", 0, -40, "cyan", lambda x, y: orecore_miner())
+    create_button("Save Game", 0, -110, "green", lambda x, y: save_game())
+    create_button("Exit", 0, -180, "red", lambda x, y: screen.bye())
+
+    screen.mainloop()
+
+# -----------------------------
+# Launch the Game
+# -----------------------------
+load_game()
+phone_code_hub()
+   
+ 
